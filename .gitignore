@@ -1,0 +1,3 @@
+terraform/.terraform
+github/.terraform.lock.hcl
+github/terraform.tfstate
