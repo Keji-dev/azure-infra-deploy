@@ -1,0 +1,44 @@
+---
+- name: Automating image uploads to ACR
+  hosts: localhost 
+  gather_facts: no
+  vars_files:
+    - vars.yml  
+  tasks:
+    - name: Login to Azure Container Registry
+      containers.podman.podman_login:
+        registry: "{{ ACR_LOGIN_SERVER }}" 
+        username: "{{ lookup('env', 'ACR_USERNAME') }}"
+        password: "{{ lookup('env', 'ACR_PASSWORD') }}" 
+
+    - name: Build a custom Nginx image
+      containers.podman.podman_image:
+        name: "{{ IMAGE1_NAME }}-custom"
+        path: ~/azure-infra-deploy/ansible/nginx-config/
+        state: present
+
+    - name: Pull Jenkins image
+      containers.podman.podman_image:
+        name: docker.io/jenkins/jenkins:latest
+
+    - name: Tag nginx image for ACR
+      containers.podman.podman_tag:
+        image: "{{ IMAGE1_NAME }}-custom"
+        target_names:
+          - "{{ ACR_LOGIN_SERVER }}/{{ IMAGE1_NAME }}:{{ IMAGE_TAG }}"
+
+    - name: Tag jenkins image for ACR
+      containers.podman.podman_tag:
+        image: docker.io/jenkins/jenkins:latest
+        target_names:
+          - "{{ ACR_LOGIN_SERVER }}/{{ IMAGE2_NAME }}:{{ IMAGE_TAG }}"
+
+    - name: Push Nginx image to ACR
+      containers.podman.podman_image:
+        name: "{{ ACR_LOGIN_SERVER }}/{{ IMAGE1_NAME }}:{{ IMAGE_TAG }}"
+        push: true
+
+    - name: Push Jenkins image to ACR
+      containers.podman.podman_image:
+        name: "{{ ACR_LOGIN_SERVER }}/{{ IMAGE2_NAME }}:{{ IMAGE_TAG }}"
+        push: true

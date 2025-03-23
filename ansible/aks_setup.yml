@@ -1,0 +1,92 @@
+---
+- name: Deploy Jenkins on AKS using Podman
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Generate ACR credentials JSON
+      template:
+        src: acr_credentials.json
+        dest: /tmp/acr_credentials.json
+      register: acr_creds_json
+
+    - name: Create ACR Secret in AKS
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: acr-secret
+            namespace: default
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: "{{ lookup('file', '/tmp/acr_credentials.json') | from_json | to_json | b64encode }}"
+
+    - name: Deploy Jenkins in AKS
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: jenkins
+            namespace: default
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: jenkins
+            template:
+              metadata:
+                labels:
+                  app: jenkins
+              spec:
+                imagePullSecrets:
+                  - name: acr-secret
+                containers:
+                  - name: jenkins
+                    image: "{{ ACR_LOGIN_SERVER }}/{{ IMAGE2_NAME }}:{{ IMAGE_TAG }}"
+                    ports:
+                      - containerPort: 8080
+                volumes:
+                  - name: jenkins-storage
+                    persistentVolumeClaim:
+                      claimName: jenkins-pvc
+
+    - name: Create Persistent Volume Claim for Jenkins
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: jenkins-pvc
+            namespace: default
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 5Gi
+            storageClassName: "{{ storage_class_name }}"
+
+    - name: Expose Jenkins via LoadBalancer
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: jenkins-service
+            namespace: default
+          spec:
+            selector:
+              app: jenkins
+            ports:
+              - protocol: TCP
+                port: 8080
+                targetPort: 8080
+            type: LoadBalancer

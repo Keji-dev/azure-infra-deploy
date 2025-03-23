@@ -1,0 +1,18 @@
+---
+- name: Assign AcrPull role to VM's Managed Identity
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Get role definition ID for AcrPull
+      azure.azcollection.azure_rm_roledefinition_info:
+        role_name: "AcrPull"
+        scope: "/subscriptions/{{ lookup('env', 'TF_VAR_subscription_id') }}" 
+      register: acr_pull_role
+
+    - name: Assign AcrPull role to Managed Identity
+      azure.azcollection.azure_rm_roleassignment:
+        assignee_object_id: "{{ lookup('env', 'VM_PRINCIPAL_ID') }}"
+        role_definition_id: "{{ acr_pull_role.role_definitions[0].id }}"
+        scope: "/subscriptions/{{ lookup('env', 'TF_VAR_subscription_id') }}/resourceGroups/{{ RESOURCE_GROUP_NAME }}/providers/Microsoft.ContainerRegistry/registries/{{ ACR_NAME }}"
+        state: present

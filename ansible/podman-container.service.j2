@@ -1,0 +1,12 @@
+[Unit]
+Description=Podman Container - {{ IMAGE1_NAME }}
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/podman run --name {{ IMAGE1_NAME }} -p 8080:80 {{ ACR_LOGIN_SERVER }}/{{ IMAGE1_NAME }}:{{ IMAGE_TAG }}
+ExecStop=/usr/bin/podman stop {{ IMAGE1_NAME }}
+Restart=always
+User={{ ansible_user_id }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,53 @@
+---
+- name: Deploy container from Azure ACR using Podman
+  hosts: azure_vm
+  gather_facts: yes
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Verify Podman installation
+      become: true
+      ansible.builtin.apt:
+        name: podman
+        update_cache: yes
+        state: present  
+
+    - name: Login to Azure Container Registry
+      containers.podman.podman_login:
+        registry: "{{ ACR_LOGIN_SERVER }}" 
+        username: "{{ lookup('env', 'ACR_USERNAME') }}"
+        password: "{{ lookup('env', 'ACR_PASSWORD') }}"
+
+    - name: Pull Nginx image from ACR using Podman
+      containers.podman.podman_image:
+        name: "{{ ACR_LOGIN_SERVER }}/{{ IMAGE1_NAME }}:{{ IMAGE_TAG }}"
+        state: present
+        pull: yes  
+      become: false  
+
+    - name: Create systemd service file for Podman container
+      become: true
+      ansible.builtin.template:
+        src: podman-container.service.j2
+        dest: "/etc/systemd/system/{{ IMAGE1_NAME }}.service"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Reload systemd to apply changes
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Enable the Podman service to start on boot
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ IMAGE1_NAME }}"
+        enabled: yes
+
+    - name: Start the Podman container service
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ IMAGE1_NAME }}"
+        state: started
