@@ -111,19 +111,6 @@ La infraestructura desplegada incluye los siguientes componentes:
     ```
 4.  Accede a Jenkins a través del Load Balancer en el puerto 8080.
 
-## Dificultades Encontradas y Soluciones
-
-1.  **Login Correcto desde AKS Creando un Secreto:** Se creó un secreto de Kubernetes utilizando las credenciales de ACR para permitir que AKS extrajera la imagen de Jenkins.
-2.  **Creación del Servicio en la VM Automáticamente:** Se configuró un servicio de systemd para el contenedor Podman de Nginx para que se inicie automáticamente después de un reinicio.
-3.  **Certificado X.509 y Autenticación Básica htpasswd:** Se generó un certificado autofirmado y se configuró la autenticación básica en Nginx para proteger el acceso.
-
-## Referencias
-
-* Microsoft. (2023). Authenticate with ACR from AKS. Recuperado de [https://learn.microsoft.com/en-us/azure/aks/cluster-container-registry-integration](https://learn.microsoft.com/en-us/azure/aks/cluster-container-registry-integration)
-* Freedesktop.org. (2023). Systemd service files. Recuperado de [https://www.freedesktop.org/software/systemd/man/systemd.service.html](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
-* NGINX. (2023). Configuring Basic Authentication in Nginx. Recuperado de [https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
-* Otras menciones: Youtube, Stack Overflow, Reddit
-
 ## Licencia
 
 Este proyecto está bajo la [MIT License](LICENSE).
