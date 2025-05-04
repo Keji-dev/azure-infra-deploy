@@ -7,6 +7,7 @@ Este proyecto automatiza el despliegue de una infraestructura escalable en Azure
 Se ha utilizado Terraform para aprovisionar la infraestructura base en Azure y un repositorio en GitHub para el código. Posteriormente, Ansible se encarga de configurar la máquina virtual con un contenedor Nginx (gestionado como servicio con certificado y autenticación básica) y de desplegar Jenkins en el clúster de Kubernetes, incluyendo almacenamiento persistente y un Load Balancer para acceso externo.
 
 ## Arquitectura
+![azure-infra-deploy-architecture](https://github.com/user-attachments/assets/a5b886c2-611d-4bd1-ab22-90e2d9833643)
 
 La infraestructura desplegada incluye los siguientes componentes:
 
@@ -32,9 +33,7 @@ La infraestructura desplegada incluye los siguientes componentes:
 * **VM:** Despliegue de un contenedor Nginx personalizado (con SSL y autenticación básica) utilizando Podman y gestionado como un servicio de systemd.
 * **AKS:** Despliegue de Jenkins, creación de un volumen persistente y exposición mediante un Load Balancer.
 
-## Estructura del Proyecto
-
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 - **azure-infra-deploy/**
   - **Terraform/**
