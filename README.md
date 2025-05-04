@@ -36,33 +36,33 @@ La infraestructura desplegada incluye los siguientes componentes:
 
 azure-infra-deploy/
 ├── Terraform/
-│ ├── _providers.tf
-│ ├── _vars.tf
-│ ├── aks.tf
-│ ├── github_repo.tf
-│ ├── main.tf
-│ ├── managed_disk.tf
-│ ├── network.tf
-│ ├── outputs.tf
-│ ├── security.tf
-│ └── vm.tf
+│   ├── _providers.tf
+│   ├── _vars.tf
+│   ├── aks.tf
+│   ├── github_repo.tf
+│   ├── main.tf
+│   ├── managed_disk.tf
+│   ├── network.tf
+│   ├── outputs.tf
+│   ├── security.tf
+│   └── vm.tf
 └── Ansible/
-├── acr_upload.yml
-├── Aks_setup.yml
-├── inventory.yml
-├── role_config.yml
-├── vars.yml
-├── vm_setup.yml
-└── nginx-config/
-├── auth/
-│ └── .htpasswd
-└── ssl/
-├── nginx.crt
-└── nginx.key
-├── Dockerfile
-├── nginx.conf
-├── acr_credentials.json
-└── Podman-container.service.j2
+    ├── acr_upload.yml
+    ├── Aks_setup.yml
+    ├── inventory.yml
+    ├── role_config.yml
+    ├── vars.yml
+    ├── vm_setup.yml
+    └── nginx-config/
+        ├── auth/
+        │   └── .htpasswd
+        └── ssl/
+            ├── nginx.crt
+            └── nginx.key
+        ├── Dockerfile
+        ├── nginx.conf
+        ├── acr_credentials.json
+        └── Podman-container.service.j2
 
 ## Despliegue
 
