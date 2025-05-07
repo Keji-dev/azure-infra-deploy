@@ -25,6 +25,11 @@ variable "vm_size" {
   default = "Standard_B1ms"
 }
 
+variable "admin_username" {
+  description = "Administrator username"
+  sensitive = true
+}
+
 
 # The "vm_map" variable is a map that defines the configuration for each virtual machine (VM). 
 # Each entry in the map contains the name and size of a VM. This allows for dynamic VM creation with different configurations.
