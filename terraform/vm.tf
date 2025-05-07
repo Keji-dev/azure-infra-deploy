@@ -4,12 +4,12 @@ resource "azurerm_linux_virtual_machine" "vm-dev-server" {
     resource_group_name = azurerm_resource_group.rg-deploy.name  # Associate with the resource group
     location = azurerm_resource_group.rg-deploy.location  # Define the location of the VM
     size = var.vm_size  # Use the VM size from the variable
-    admin_username = "keji"  # Set the admin username
+    admin_username = var.admin_usernames  # Set the admin username
     network_interface_ids = [azurerm_network_interface.vm-nic.id]  # Attach the network interface
     disable_password_authentication = true  # Disable password authentication, using SSH keys instead
 
     admin_ssh_key {
-      username = "keji"  # Define the SSH key username
+      username = var.admin_usernames  # Define the SSH key username
       public_key = file("~/.ssh/id_rsa.pub")  # Path to the public SSH key for authentication
     }
 
@@ -48,12 +48,12 @@ resource "azurerm_linux_virtual_machine" "vm-dev-server" {
 #     resource_group_name = azurerm_resource_group.rg-deploy.name  # Associate with the resource group
 #     location = azurerm_resource_group.rg-deploy.location  # Define the location of the VM
 #     size = each.value.size # Use the VM size from the variable per each key
-#     admin_username = "admin"  # Set the admin username
+#     admin_username = var.admin_usernames  # Set the admin username
 #     network_interface_ids = [azurerm_network_interface.vm-nic[each.key].id]  # Attach the network interface per each key
 #     disable_password_authentication = true  # Disable password authentication, using SSH keys instead
 
 #     admin_ssh_key {
-#       username = "admin"  # Define the SSH key username
+#       username = var.admin_usernames  # Define the SSH key username
 #       public_key = file("~/.ssh/id_rsa.pub")  # Path to the public SSH key for authentication
 #     }
 
